@@ -1,0 +1,4 @@
+DirectorySlash Off
+DirectoryIndex /~tim/call-record/index.php
+FallbackResource /~tim/call-record/index.php
+
