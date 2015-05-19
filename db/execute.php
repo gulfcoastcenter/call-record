@@ -6,7 +6,7 @@ function execute ($connection, $proc, $args) {
 
    if (is_object($args)) { 
       foreach ($args as $key=>$val) {
-          mssql_bind($sp, '@'.$key, $args->$key, SQLVARCHAR);
+         $o = mssql_bind($sp, '@'.$key, $args->$key, SQLVARCHAR);
       }
    }
    $out = [];
