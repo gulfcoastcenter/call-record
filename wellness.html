@@ -1,0 +1,268 @@
+<!doctype html>
+<html>
+<head>
+   <title>Wellness Phone Calls</title>
+   <style>
+      h1 { 
+         text-align: center;
+      }
+      label {
+         display: inline-block;
+         width: 10em;
+      }
+      .calls, .activecall {
+         display: inline-block;
+      }
+      .calls {
+         width: 30%;
+         position: absolute;
+         top: 3em;
+         left: 0;
+         padding: 1%;
+         background-color: lightgrey;
+         border-radius: 0 9px 9px 0;
+      }
+      .activecall {
+         margin-left: 32%;
+         width: 65%;
+      }
+      .hamburger-menu {
+         display: block;
+         position: relative;
+         overflow: hidden;
+         margin: 0;
+         padding: 0;
+         width: 28px;
+         height: 21px;
+         font-size: 0;
+         text-indent: -99999px;
+         -webkit-appearance: none;
+         -moz-appearance: none;
+         appearance: none;
+         box-shadow: none;
+         border-radius: 10%;
+         border: none;
+         cursor: pointer;
+         -webkit-transition: background 0.3s;
+         transition: background 0.3s;
+      }
+      .hamburger-menu span {
+         display: block;
+         position: absolute;
+         top: 9px;
+         left: 8px;
+         right: 8px;
+         height: 3px;
+         background: black;
+      }
+      .hamburger-menu span::before,
+      .hamburger-menu span::after {
+         position: absolute;
+         display: block;
+         left: 0;
+         width: 100%;
+         height: 3px;
+         background-color: black;
+         content: "";
+      }
+      .hamburger-menu span::before {
+         top: -5px;
+      }
+      .hamburger-menu span::after {
+         bottom: -5px;
+      }
+      .call-item {
+         padding: 5px;
+      }
+      .call-item:hover {
+         background-color: lightyellow;
+         border-radius: 20px;
+         cursor: pointer;
+      }
+
+
+   </style>
+</head>
+<body>
+   <h1>Wellness Call Record</h1>
+   <div class='calls'>
+      <div class='menu-icon'>
+         <button class='hamburger-menu'>
+            <span>Hamburger Menu</span>
+         </button>
+      </div>
+      <div data-bind='click: new_call'>[ + ] Add Call</div>
+      <div data-bind='template: {name: "call-template", foreach: calls}'></div>
+   </div>
+   <div class='activecall' data-bind='template: {name: "active-template", if: activecall, data: activecall}'>
+   </div>
+
+<script type='text/html' id='call-template'>
+   <div class='call-item' data-bind='click: $parent.activate_call'>
+      <span data-bind='text: date'></span>
+       - 
+      <span data-bind='text: caller'></span>
+   </div>
+</script>
+<script type='text/html' id='active-template'>
+   <div>
+      <div class='item'>
+         <div data-bind='click: $parent.clear_active'>
+            [ - ] Clear Data
+         </div>
+         <div data-bind='click: $parent.edit_active'>
+            [ + ] Save Data
+         </div>
+      </div>
+      <div class='item'>
+         <label>id</label>
+         <span data-bind='text: id'></span>
+      </div>
+      <div class='item'>
+         <label>Call Date</label>
+         <input type='text' data-bind='textInput: date'>
+      </div>
+      <div class='item'>
+         <label>Caller</label>
+         <input type='text' data-bind='textInput: caller'>
+      </div>
+      <div class='item'>
+         <label>Patient Name</label>
+         <input type='text' data-bind='textInput: patient'>
+      </div>
+      <div class='item'>
+         <label>Phone</label>
+         <input type='text' data-bind='textInput: phone'>
+      </div>
+      <div class='item'>
+         <label>County</label>
+         <input type='text' data-bind='textInput: county'>
+      </div>
+      <div class='item'>
+         <label>street</label>
+         <input type='text' data-bind='textInput: street'>
+      </div>
+      <div class='item'>
+         <label>state</label>
+         <input type='text' data-bind='textInput: state'>
+      </div>
+      <div class='item'>
+         <label>zip</label>
+         <input type='text' data-bind='textInput: zip'>
+      </div>
+      <div class='item'>
+         <label>Referred To</label>
+         <input type='text' data-bind='textInput: referredto'>
+      </div>
+      <div class='item'>
+         <label>Referred From</label>
+         <input type='text' data-bind='textInput: referredfrom'>
+      </div>
+      <div class='item'>
+         <label>Request</label>
+         <textarea data-bind='textInput: request'></textarea>
+      </div>
+   </div>
+</script>
+<script src='https://cdnjs.cloudflare.com/ajax/libs/knockout/3.3.0/knockout-min.js'></script>
+<script src='https://code.jquery.com/jquery-1.11.3.min.js'></script>
+<script>
+   var model = {
+      calls: ko.observableArray(),
+      updatelist: ko.observable(false),
+      activecall: ko.observable(),
+      editedcall: ko.observable(),
+      new_call: function() {
+            model.activate_call({id: 'new'});
+         },
+      activate_call: function(call) { 
+         model.updatelist(!model.updatelist());
+            console.log('activate:', call.id);
+         $.get('~tim/call-record/api/call/' + call.id, function(details) {
+            var det = JSON.parse(details);
+            console.log(details);
+            model.activecall({
+               id: ko.observable(det.id),
+               program: ko.observable(det.program),
+               date: ko.observable(det.date),
+               caller: ko.observable(det.caller),
+               patient: ko.observable(det.patient),
+               cmhcid: ko.observable(det.cmhcid),
+               phone: ko.observable(det.phone),
+               county: ko.observable(det.county),
+               street: ko.observable(det.street),
+               state: ko.observable(det.state),
+               zip: ko.observable(det.zip),
+               referredto: ko.observable(det.referredto),
+               referredfrom: ko.observable(det.referredfrom),
+               request: ko.observable(det.request),
+               historyid: ko.observable(det.historyid),
+               status: ko.observable(det.status)
+            });
+         });
+      },
+      clear_active: function() {
+         model.activecall('');
+      },
+      edit_active: function() {
+         var call = model.activecall();
+         model.editedcall({
+            id: call.id(),
+            program: call.program(),
+            date: call.date(),
+            caller: call.caller(),
+            patient: call.patient(),
+            cmhcid: call.cmhcid(),
+            phone: call.phone(),
+            county: call.county(),
+            street: call.street(),
+            state: call.state(),
+            zip: call.zip(),
+            referredto: call.referredto(),
+            referredfrom: call.referredfrom(),
+            request: call.request()
+         });
+      }
+
+   };
+   ko.computed(function() { 
+      var self = this;
+      var doupdate = self.updatelist();
+      //var calls = self.calls();
+      $.get('~tim/call-record/api/calls/3600', function(calllist) {
+         console.log(calllist);
+         var cl = JSON.parse(calllist);
+         self.calls(cl);
+         //self.calls(JSON.parse(calllist));
+      });
+   }, model);
+   ko.computed(function() {
+      var self = this;
+      var call = self.editedcall();
+      if (!call) return;
+      if (call.id) {
+         $.post('~tim/call-record/api/editcall', call, 
+            function(res) { 
+               //self.clear_active();
+               console.log('edit results', res);
+               self.activate_call(JSON.parse(res));
+               //self.activecall.id(res.id);
+               //self.activecall.historyid(res.historyid);
+               //self.calls('');
+            })
+      } else {
+         call.program = 3600;
+         console.log(call);
+         $.post('~tim/call-record/api/addcall/3600', call,
+            function(res) {
+               console.log(res);
+               self.activate_call(JSON.parse(res));
+            });
+      }
+
+   }, model);
+
+   ko.applyBindings(model);
+</script>
+</body>
+</html>
