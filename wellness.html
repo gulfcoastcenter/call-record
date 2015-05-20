@@ -20,7 +20,7 @@
    </div>
    <div class='activecall' data-bind='if:has_match'>
       <div class='matches'>
-         <div>Possible Matches</div>
+         <div>Possible Related Calls</div>
          <div data-bind='template: {name: "matches-template", foreach: matches}'>
          </div>
       </div>
@@ -114,13 +114,16 @@
       <div class='item'>
          <label>Caller:</label>
          <span data-bind='text: caller'></span>
-         <div class='item'>
+         <div>
             <label>Patient:</label>
             <span data-bind='text: patient'></span>
          </div>
-         <div class='item'>
+         <div>
             <label>Phone:</label>
             <span data-bind='text: phone'></span>
+         </div>
+         <div data-bind='click: $parent.copy_match'>
+            [<-- Copy Data]
          </div>
       </div>
    </div>
@@ -167,6 +170,18 @@
                status: ko.observable(det.status)
             });
          });
+      },
+      copy_match:function(match) {
+               model.activecall().program(match.program);
+               model.activecall().caller(match.caller);
+               model.activecall().patient(match.patient);
+               model.activecall().cmhcid(match.cmhcid);
+               model.activecall().phone(match.phone);
+               model.activecall().county(match.county);
+               model.activecall().city(match.city);
+               model.activecall().street(match.street);
+               model.activecall().state(match.state);
+               model.activecall().zip(match.zip);
       },
       get_prev: function() {
          model.activate_call({id: model.activecall().historypreviousid()});
