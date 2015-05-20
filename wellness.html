@@ -26,6 +26,48 @@
          margin-left: 32%;
          width: 65%;
       }
+      .add-icon {
+         display: inline-block;
+         position: relative;
+         overflow: hidden;
+         margin: 0;
+         padding: 0;
+         width: 28px;
+         height: 21px;
+         font-size: 0;
+         text-indent: -99999px;
+         -webkit-appearance: none;
+         -moz-appearance: none;
+         appearance: none;
+         box-shadow: none;
+         border-radius: 10%;
+         border: none;
+         cursor: pointer;
+         -webkit-transition: background 0.3s;
+         transition: background 0.3s;
+      }
+      .add-icon span {
+         display: block;
+         position: absolute;
+         top: 9px;
+         left: 8px;
+         right: 8px;
+         height: 3px;
+         background: black;
+      }
+      .add-icon span::before,
+      .add-icon span::after {
+         position: absolute;
+         display: block;
+         left: 0;
+         width: 100%;
+         height: 3px;
+         background-color: black;
+         content: "";
+      }
+      .add-icon span::before {
+         transform: rotate(90deg);
+      }
       .hamburger-menu {
          display: block;
          position: relative;
@@ -71,6 +113,9 @@
       .hamburger-menu span::after {
          bottom: -5px;
       }
+      .icon-container {
+         display: inline-block;
+      }
       .call-item {
          padding: 5px;
       }
@@ -79,7 +124,11 @@
          border-radius: 20px;
          cursor: pointer;
       }
-
+      .call input {
+         padding: 5px;
+         margin: 3px;
+         border-radius: 10px;
+      }
 
    </style>
 </head>
@@ -91,7 +140,13 @@
             <span>Hamburger Menu</span>
          </button>
       </div>
-      <div data-bind='click: new_call'>[ + ] Add Call</div>
+      <div class='icon-contianer' data-bind='click: new_call'>
+         <button class='add-icon'>
+            <span></span>
+            <span></span>
+         </button>
+         Add Call
+      </div>
       <div data-bind='template: {name: "call-template", foreach: calls}'></div>
    </div>
    <div class='activecall' data-bind='template: {name: "active-template", if: activecall, data: activecall}'>
@@ -107,60 +162,75 @@
 <script type='text/html' id='active-template'>
    <div>
       <div class='item'>
-         <div data-bind='click: $parent.clear_active'>
+         <div class='icon-container' data-bind='click: $parent.clear_active'>
             [ - ] Clear Data
          </div>
-         <div data-bind='click: $parent.edit_active'>
-            [ + ] Save Data
+      </div>
+      <div class='call'>
+         <div class='item'>
+            <label>id</label>
+            <span data-bind='text: id'></span>
          </div>
+         <div class='item'>
+            <label>Call Date</label>
+            <input type='text' data-bind='textInput: date'>
+         </div>
+         <div class='item'>
+            <label>Caller</label>
+            <input type='text' data-bind='textInput: caller'>
+         </div>
+         <div class='item'>
+            <label>Patient Name</label>
+            <input type='text' data-bind='textInput: patient'>
+         </div>
+         <div class='item'>
+            <label>Phone</label>
+            <input type='text' data-bind='textInput: phone'>
+         </div>
+         <div class='item'>
+            <label>County</label>
+            <input type='text' data-bind='textInput: county'>
+         </div>
+         <div class='item'>
+            <label>City</label>
+            <input type='text' data-bind='textInput: city'>
+         </div>
+         <div class='item'>
+            <label>Street</label>
+            <input type='text' data-bind='textInput: street'>
+         </div>
+         <div class='item'>
+            <label>State</label>
+            <input type='text' data-bind='textInput: state'>
+         </div>
+         <div class='item'>
+            <label>Zip</label>
+            <input type='text' data-bind='textInput: zip'>
+         </div>
+         <div class='item'>
+            <label>Referred To</label>
+            <input type='text' data-bind='textInput: referredto'>
+         </div>
+         <div class='item'>
+            <label>Referred From</label>
+            <input type='text' data-bind='textInput: referredfrom'>
+         </div>
+         <div class='item'>
+            <label>Request</label>
+            <textarea data-bind='textInput: request'></textarea>
+         </div>
+      <div>
+      <div class='icon-container' data-bind='ifnot: historynextid, click: $parent.edit_active'>
+         <button class='add-icon'>
+            <span></span><span></span>
+         </button>
+         Save Data
       </div>
-      <div class='item'>
-         <label>id</label>
-         <span data-bind='text: id'></span>
+      <div class='icon-container' data-bind='if: historypreviousid, click: $parent.get_prev'>
+         [ <- last ]
       </div>
-      <div class='item'>
-         <label>Call Date</label>
-         <input type='text' data-bind='textInput: date'>
-      </div>
-      <div class='item'>
-         <label>Caller</label>
-         <input type='text' data-bind='textInput: caller'>
-      </div>
-      <div class='item'>
-         <label>Patient Name</label>
-         <input type='text' data-bind='textInput: patient'>
-      </div>
-      <div class='item'>
-         <label>Phone</label>
-         <input type='text' data-bind='textInput: phone'>
-      </div>
-      <div class='item'>
-         <label>County</label>
-         <input type='text' data-bind='textInput: county'>
-      </div>
-      <div class='item'>
-         <label>street</label>
-         <input type='text' data-bind='textInput: street'>
-      </div>
-      <div class='item'>
-         <label>state</label>
-         <input type='text' data-bind='textInput: state'>
-      </div>
-      <div class='item'>
-         <label>zip</label>
-         <input type='text' data-bind='textInput: zip'>
-      </div>
-      <div class='item'>
-         <label>Referred To</label>
-         <input type='text' data-bind='textInput: referredto'>
-      </div>
-      <div class='item'>
-         <label>Referred From</label>
-         <input type='text' data-bind='textInput: referredfrom'>
-      </div>
-      <div class='item'>
-         <label>Request</label>
-         <textarea data-bind='textInput: request'></textarea>
+      <div class='icon-container' data-bind='if: historynextid, click: $parent.get_next'>
+         [ next -> ]
       </div>
    </div>
 </script>
@@ -190,16 +260,24 @@
                cmhcid: ko.observable(det.cmhcid),
                phone: ko.observable(det.phone),
                county: ko.observable(det.county),
+               city: ko.observable(det.city),
                street: ko.observable(det.street),
                state: ko.observable(det.state),
                zip: ko.observable(det.zip),
                referredto: ko.observable(det.referredto),
                referredfrom: ko.observable(det.referredfrom),
                request: ko.observable(det.request),
-               historyid: ko.observable(det.historyid),
+               historypreviousid: ko.observable(det.historypreviousid),
+               historynextid: ko.observable(det.historynextid),
                status: ko.observable(det.status)
             });
          });
+      },
+      get_prev: function() {
+         model.activate_call({id: model.activecall().historypreviousid()});
+      },
+      get_next: function() {
+         model.activate_call({id: model.activecall().historynextid()});
       },
       clear_active: function() {
          model.activecall('');
@@ -215,6 +293,7 @@
             cmhcid: call.cmhcid(),
             phone: call.phone(),
             county: call.county(),
+            city: call.city(),
             street: call.street(),
             state: call.state(),
             zip: call.zip(),
