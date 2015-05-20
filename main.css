@@ -1,0 +1,137 @@
+h1 { 
+   text-align: center;
+}
+label {
+   display: inline-block;
+   width: 10em;
+}
+.calls, .activecall {
+   display: inline-block;
+}
+.calls {
+   width: 30%;
+   position: absolute;
+   top: 3em;
+   left: 0;
+   padding: 1%;
+   background-color: lightgrey;
+   border-radius: 0 9px 9px 0;
+}
+.matches {
+   width: 30%;
+   position: absolute;
+   top: 3em;
+   right: 0;
+   padding: 1%;
+   background-color: lightgrey;
+   border-radius: 9px 0 0 9px;
+}
+.activecall {
+   margin-left: 32%;
+   width: 65%;
+}
+.add-icon {
+   display: inline-block;
+   position: relative;
+   overflow: hidden;
+   margin: 0;
+   padding: 0;
+   width: 28px;
+   height: 21px;
+   font-size: 0;
+   text-indent: -99999px;
+   -webkit-appearance: none;
+   -moz-appearance: none;
+   appearance: none;
+   box-shadow: none;
+   border-radius: 10%;
+   border: none;
+   cursor: pointer;
+   -webkit-transition: background 0.3s;
+   transition: background 0.3s;
+}
+.add-icon span {
+   display: block;
+   position: absolute;
+   top: 9px;
+   left: 8px;
+   right: 8px;
+   height: 3px;
+   background: black;
+}
+.add-icon span::before,
+.add-icon span::after {
+   position: absolute;
+   display: block;
+   left: 0;
+   width: 100%;
+   height: 3px;
+   background-color: black;
+   content: "";
+}
+.add-icon span::before {
+   transform: rotate(90deg);
+}
+.hamburger-menu {
+   display: block;
+   position: relative;
+   overflow: hidden;
+   margin: 0;
+   padding: 0;
+   width: 28px;
+   height: 21px;
+   font-size: 0;
+   text-indent: -99999px;
+   -webkit-appearance: none;
+   -moz-appearance: none;
+   appearance: none;
+   box-shadow: none;
+   border-radius: 10%;
+   border: none;
+   cursor: pointer;
+   -webkit-transition: background 0.3s;
+   transition: background 0.3s;
+}
+.hamburger-menu span {
+   display: block;
+   position: absolute;
+   top: 9px;
+   left: 8px;
+   right: 8px;
+   height: 3px;
+   background: black;
+}
+.hamburger-menu span::before,
+.hamburger-menu span::after {
+   position: absolute;
+   display: block;
+   left: 0;
+   width: 100%;
+   height: 3px;
+   background-color: black;
+   content: "";
+}
+.hamburger-menu span::before {
+   top: -5px;
+}
+.hamburger-menu span::after {
+   bottom: -5px;
+}
+.icon-container {
+   display: inline-block;
+}
+.call-item {
+   padding: 5px;
+}
+.call-item:hover {
+   background-color: lightyellow;
+   border-radius: 20px;
+   cursor: pointer;
+}
+.call input {
+   padding: 5px;
+   margin: 3px;
+   border-radius: 10px;
+}
+
+

@@ -2,154 +2,28 @@
 <html>
 <head>
    <title>Wellness Phone Calls</title>
-   <style>
-      h1 { 
-         text-align: center;
-      }
-      label {
-         display: inline-block;
-         width: 10em;
-      }
-      .calls, .activecall {
-         display: inline-block;
-      }
-      .calls {
-         width: 30%;
-         position: absolute;
-         top: 3em;
-         left: 0;
-         padding: 1%;
-         background-color: lightgrey;
-         border-radius: 0 9px 9px 0;
-      }
-      .activecall {
-         margin-left: 32%;
-         width: 65%;
-      }
-      .add-icon {
-         display: inline-block;
-         position: relative;
-         overflow: hidden;
-         margin: 0;
-         padding: 0;
-         width: 28px;
-         height: 21px;
-         font-size: 0;
-         text-indent: -99999px;
-         -webkit-appearance: none;
-         -moz-appearance: none;
-         appearance: none;
-         box-shadow: none;
-         border-radius: 10%;
-         border: none;
-         cursor: pointer;
-         -webkit-transition: background 0.3s;
-         transition: background 0.3s;
-      }
-      .add-icon span {
-         display: block;
-         position: absolute;
-         top: 9px;
-         left: 8px;
-         right: 8px;
-         height: 3px;
-         background: black;
-      }
-      .add-icon span::before,
-      .add-icon span::after {
-         position: absolute;
-         display: block;
-         left: 0;
-         width: 100%;
-         height: 3px;
-         background-color: black;
-         content: "";
-      }
-      .add-icon span::before {
-         transform: rotate(90deg);
-      }
-      .hamburger-menu {
-         display: block;
-         position: relative;
-         overflow: hidden;
-         margin: 0;
-         padding: 0;
-         width: 28px;
-         height: 21px;
-         font-size: 0;
-         text-indent: -99999px;
-         -webkit-appearance: none;
-         -moz-appearance: none;
-         appearance: none;
-         box-shadow: none;
-         border-radius: 10%;
-         border: none;
-         cursor: pointer;
-         -webkit-transition: background 0.3s;
-         transition: background 0.3s;
-      }
-      .hamburger-menu span {
-         display: block;
-         position: absolute;
-         top: 9px;
-         left: 8px;
-         right: 8px;
-         height: 3px;
-         background: black;
-      }
-      .hamburger-menu span::before,
-      .hamburger-menu span::after {
-         position: absolute;
-         display: block;
-         left: 0;
-         width: 100%;
-         height: 3px;
-         background-color: black;
-         content: "";
-      }
-      .hamburger-menu span::before {
-         top: -5px;
-      }
-      .hamburger-menu span::after {
-         bottom: -5px;
-      }
-      .icon-container {
-         display: inline-block;
-      }
-      .call-item {
-         padding: 5px;
-      }
-      .call-item:hover {
-         background-color: lightyellow;
-         border-radius: 20px;
-         cursor: pointer;
-      }
-      .call input {
-         padding: 5px;
-         margin: 3px;
-         border-radius: 10px;
-      }
-
-   </style>
+   <link rel='stylesheet' href='main.css'></link>
 </head>
 <body>
    <h1>Wellness Call Record</h1>
    <div class='calls'>
-      <div class='menu-icon'>
-         <button class='hamburger-menu'>
-            <span>Hamburger Menu</span>
-         </button>
-      </div>
       <div class='icon-contianer' data-bind='click: new_call'>
          <button class='add-icon'>
-            <span></span>
             <span></span>
          </button>
          Add Call
       </div>
       <div data-bind='template: {name: "call-template", foreach: calls}'></div>
    </div>
-   <div class='activecall' data-bind='template: {name: "active-template", if: activecall, data: activecall}'>
+   <div class='activecall'>
+     <div data-bind='template: {name: "active-template", if: activecall, data: activecall}'> </div>
+   </div>
+   <div class='activecall' data-bind='if:has_match'>
+      <div class='matches'>
+         <div>Possible Matches</div>
+         <div data-bind='template: {name: "matches-template", foreach: matches}'>
+         </div>
+      </div>
    </div>
 
 <script type='text/html' id='call-template'>
@@ -159,6 +33,7 @@
       <span data-bind='text: caller'></span>
    </div>
 </script>
+
 <script type='text/html' id='active-template'>
    <div>
       <div class='item'>
@@ -234,12 +109,31 @@
       </div>
    </div>
 </script>
+<script type='text/html' id='matches-template'>
+   <div class='match-container'>
+      <div class='item'>
+         <label>Caller:</label>
+         <span data-bind='text: caller'></span>
+         <div class='item'>
+            <label>Patient:</label>
+            <span data-bind='text: patient'></span>
+         </div>
+         <div class='item'>
+            <label>Phone:</label>
+            <span data-bind='text: phone'></span>
+         </div>
+      </div>
+   </div>
+</script>
 <script src='https://cdnjs.cloudflare.com/ajax/libs/knockout/3.3.0/knockout-min.js'></script>
 <script src='https://code.jquery.com/jquery-1.11.3.min.js'></script>
 <script>
    var model = {
       calls: ko.observableArray(),
       updatelist: ko.observable(false),
+      matches: ko.observableArray(),
+      updatematches: ko.observable(false),
+      has_match: ko.observable(false),
       activecall: ko.observable(),
       editedcall: ko.observable(),
       new_call: function() {
@@ -247,7 +141,8 @@
          },
       activate_call: function(call) { 
          model.updatelist(!model.updatelist());
-            console.log('activate:', call.id);
+         model.updatematches(!model.updatematches());
+         console.log('activate:', call.id);
          $.get('~tim/call-record/api/call/' + call.id, function(details) {
             var det = JSON.parse(details);
             console.log(details);
@@ -281,6 +176,7 @@
       },
       clear_active: function() {
          model.activecall('');
+         model.matches('');
       },
       edit_active: function() {
          var call = model.activecall();
@@ -317,6 +213,23 @@
    }, model);
    ko.computed(function() {
       var self = this;
+      var doupdate = self.updatematches();
+      var thiscall = self.activecall();
+      if (!thiscall) return;
+      $.post('api/possiblematches', {
+         caller: thiscall.caller(),
+         excludeid: thiscall.id(),
+         patient: thiscall.patient(),
+         phone: thiscall.phone()
+         }, function(matchlist) {
+
+         console.log(matchlist);
+         var ml = JSON.parse(matchlist);
+         self.matches(ml);
+      });
+   }, model);
+   ko.computed(function() {
+      var self = this;
       var call = self.editedcall();
       if (!call) return;
       if (call.id) {
@@ -339,6 +252,9 @@
             });
       }
 
+   }, model);
+   ko.computed(function() {
+      this.has_match( this.matches().length > 0);
    }, model);
 
    ko.applyBindings(model);
