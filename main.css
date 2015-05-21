@@ -140,10 +140,14 @@ label {
    border-radius: 20px;
    cursor: pointer;
 }
-.call input {
+.call input,select,textarea {
+   font: .9em "Open Sans", sans-serif;
    padding: 5px;
    margin: 3px;
+   border: 1px solid grey;
    border-radius: 10px;
 }
 
-
+body {
+   font: .9em "Open Sans", sans-serif;
+}
