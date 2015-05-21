@@ -25,6 +25,7 @@
       </div>
       <div class='matches'>
          <div>Possible CMHC Matches</div>
+         <div data-bind='template: {name: "cmhc-template", foreach: cmhc}'></div>
       </div>
    </div>
 
@@ -131,6 +132,21 @@
       </div>
    </div>
 </script>
+<script type='text/html' id='cmhc-template'>
+   <div class='cmch-item-container'>
+      <div class='item'>
+         <label>ID:</label>
+         <span data-bind='text: id'></span>
+         <label>Name:</label>
+         <span data-bind='text: name'></span>
+         <label>DOB:</label>
+         <span data-bind='text: dob'></span>
+         <div data-bind='click: $parent.copy_cmhc, ifnot: $parent.activecall().historynextid'>
+            [<-- Copy Address Data]
+         </div>
+      </div>
+   </div>
+</script>
 <script src='https://cdnjs.cloudflare.com/ajax/libs/knockout/3.3.0/knockout-min.js'></script>
 <script src='https://code.jquery.com/jquery-1.11.3.min.js'></script>
 <script>
@@ -140,6 +156,7 @@
       matches: ko.observableArray(),
       updatematches: ko.observable(false),
       has_match: ko.observable(false),
+      cmhc: ko.observableArray(),
       activecall: ko.observable(),
       editedcall: ko.observable(),
       new_call: function() {
@@ -179,6 +196,16 @@
                model.activecall().caller(match.caller);
                model.activecall().patient(match.patient);
                model.activecall().cmhcid(match.cmhcid);
+               model.activecall().phone(match.phone);
+               model.activecall().county(match.county);
+               model.activecall().city(match.city);
+               model.activecall().street(match.street);
+               model.activecall().state(match.state);
+               model.activecall().zip(match.zip);
+      },
+      copy_cmhc:function(match) {
+               model.activecall().cmhcid(match.id);
+               model.activecall().patient(match.name);
                model.activecall().phone(match.phone);
                model.activecall().county(match.county);
                model.activecall().city(match.city);
@@ -248,6 +275,19 @@
    }, model);
    ko.computed(function() {
       var self = this;
+      var doupdate = self.updatematches();
+      var thiscall = self.activecall();
+      if (!thiscall) return;
+      $.post('api/possiblecmhcmatches', {
+         patient: thiscall.patient()
+         }, function(cmhclist) {
+         console.log(cmhclist);
+         var cl = JSON.parse(cmhclist);
+         self.cmhc(cl);
+      });
+   }, model);
+   ko.computed(function() {
+      var self = this;
       var call = self.editedcall();
       if (!call) return;
       if (call.id) {
@@ -272,7 +312,7 @@
 
    }, model);
    ko.computed(function() {
-      this.has_match( this.matches().length > 0);
+      this.has_match( this.matches().length > 0 || this.cmhc().length > 0);
    }, model);
 
    ko.applyBindings(model);
