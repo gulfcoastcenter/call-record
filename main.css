@@ -17,18 +17,27 @@ label {
    background-color: lightgrey;
    border-radius: 0 9px 9px 0;
 }
-.matches {
+.match-container {
    width: 30%;
    position: absolute;
    top: 3em;
    right: 0;
-   padding: 1%;
+}
+.matches {
+   /*
+   width: 30%;
+   position: absolute;
+   top: 3em;
+   right: 0;
+   */
+   padding: 2%;
+   margin-bottom: 1%;
    background-color: lightgrey;
    border-radius: 9px 0 0 9px;
 }
 .activecall {
    margin-left: 32%;
-   width: 65%;
+   width: 33%;
 }
 .add-icon {
    display: inline-block;
@@ -119,6 +128,9 @@ label {
 }
 .icon-container {
    display: inline-block;
+}
+.item {
+   margin: .5em 0 0 1em;
 }
 .call-item {
    padding: 5px;

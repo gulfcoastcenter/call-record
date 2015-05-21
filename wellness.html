@@ -18,11 +18,13 @@
    <div class='activecall'>
      <div data-bind='template: {name: "active-template", if: activecall, data: activecall}'> </div>
    </div>
-   <div class='activecall' data-bind='if:has_match'>
+   <div class='match-container' data-bind='if:has_match'>
       <div class='matches'>
          <div>Possible Related Calls</div>
-         <div data-bind='template: {name: "matches-template", foreach: matches}'>
-         </div>
+         <div data-bind='template: {name: "matches-template", foreach: matches}'> </div>
+      </div>
+      <div class='matches'>
+         <div>Possible CMHC Matches</div>
       </div>
    </div>
 
@@ -110,8 +112,9 @@
    </div>
 </script>
 <script type='text/html' id='matches-template'>
-   <div class='match-container'>
+   <div class='match-item-container'>
       <div class='item'>
+         <div>(<span data-bind='text: date'></span>)</div>
          <label>Caller:</label>
          <span data-bind='text: caller'></span>
          <div>
@@ -122,8 +125,8 @@
             <label>Phone:</label>
             <span data-bind='text: phone'></span>
          </div>
-         <div data-bind='click: $parent.copy_match'>
-            [<-- Copy Data]
+         <div data-bind='click: $parent.copy_match, ifnot: $parent.activecall().historynextid'>
+            [<-- Copy Address Data]
          </div>
       </div>
    </div>
