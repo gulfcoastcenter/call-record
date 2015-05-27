@@ -17,6 +17,10 @@ if object_id('sp_voidcall') is not null
 	drop procedure sp_voidcall
 if object_id('sp_getcall') is not null
 	drop procedure sp_getcall
+if OBJECT_ID('sp_matchcall') is not null
+	drop procedure sp_matchcall
+if OBJECT_ID('sp_updateNewHistoryCall') is not null
+	drop procedure sp_updateNewHistoryCall
 	
 go
 create procedure sp_counties as
@@ -48,7 +52,8 @@ end
 --exec sp_calls 3600
 go
 create procedure sp_calls (
-	@program as int
+	@program as int,
+	@status as int = 0
 ) as
 begin
 	select callId
@@ -56,8 +61,8 @@ begin
 		--, calldate
 		, callername
 	from call_record
-	where @program is null or programId = @program
-	  and status = 0
+	where (@program is null or programId = @program)
+	  and status = @status
 end
 
 go
@@ -72,12 +77,14 @@ begin
 		convert(nvarchar(10), CallDate, 101),
 		CallerName ,
 		Status,
-		HistoryId,
+		HistoryPreviousId,
+		HistoryNextId,
 		ProgramId,
 		PatientName ,
 		CmhcId ,
 		PhoneNumber ,
 		County ,
+		City, 
 		Street ,
 		State ,
 		Zip ,
@@ -90,7 +97,8 @@ end
 
 go
 create procedure sp_addcall (
-	@HistoryId int = null,
+	@HistoryPreviousId int = null,
+	@HistoryNextId int = null,
 	@ProgramId int,
 	@CallDate datetime,
 	@CallerName varchar(64) = null,
@@ -98,6 +106,7 @@ create procedure sp_addcall (
 	@CmhcId varchar(10) = null,
 	@PhoneNumber varchar(10) = null,
 	@County varchar(10) = null,
+	@City varchar(64) = null,
 	@Street varchar(64) = null,
 	@State varchar(2) = null,
 	@Zip varchar(9) = null,
@@ -109,7 +118,8 @@ create procedure sp_addcall (
 begin
 	insert into call_record (
 		Status,
-		HistoryId,
+		HistoryPreviousId,
+		HistoryNextId,
 		ProgramId,
 		CallDate ,
 		CallerName ,
@@ -117,15 +127,18 @@ begin
 		CmhcId ,
 		PhoneNumber ,
 		County ,
+		City ,
 		Street ,
 		State ,
 		Zip ,
 		ReferredTo ,
 		ReferredFrom ,
-		Request
+		Request ,
+		CreateDate
 	) values (
 		0,
-		@HistoryId,
+		@HistoryPreviousId,
+		@HistoryNextId,
 		@ProgramId,
 		@CallDate ,
 		@CallerName ,
@@ -133,12 +146,14 @@ begin
 		@CmhcId ,
 		@PhoneNumber ,
 		@County ,
+		@City, 
 		@Street ,
 		@State ,
 		@Zip ,
 		@ReferredTo ,
 		@ReferredFrom ,
-		@Request
+		@Request ,
+		GETDATE()
 	);
 	--select @new_id = scope_identity()
 	select scope_identity() as [new_id]
@@ -159,6 +174,16 @@ begin
 	where CallId = @callid
 end
 
+go
+create procedure sp_updateNewHistoryCall (
+	@callid int,
+	@newid int
+) as
+begin
+	update call_record
+	set HistoryNextId = @newid
+	where callid = @callid
+end
 
 --exec sp_updatecall 2, 3600, '5/13/2015', 'edit new name', 'edit new patient'
 go
@@ -172,6 +197,7 @@ create procedure sp_updatecall (
 	@CmhcId varchar(10) = null,
 	@PhoneNumber varchar(10) = null,
 	@County varchar(10) = null,
+	@City varchar(64) = null,
 	@Street varchar(64) = null,
 	@State varchar(2) = null,
 	@Zip varchar(9) = null,
@@ -191,6 +217,7 @@ begin
 	exec sp_addcall 
 		--@HistoryId,
 		@callId,
+		null,
 		@programId,
 		@CallDate,
 		@CallerName,
@@ -198,6 +225,7 @@ begin
 		@CmhcId,
 		@PhoneNumber,
 		@County,
+		@City,
 		@Street,
 		@State,
 		@Zip,
@@ -209,7 +237,13 @@ begin
 	
 	exec sp_updatecallstatus @callid, 1
 	
-	select new_id from #res
+	--declare @new_id
+	select top 1 @new_id = new_id from #res
+	
+	exec sp_updateNewHistoryCall @callid, @new_id
+	
+	select @new_id
+	--select new_id from #res
 end
 
 go
@@ -218,4 +252,18 @@ create procedure sp_voidcall (
 ) as
 begin
 	exec sp_updatecallstatus @callid, 2
+end
+
+--exec sp_matchcall 'anderson cooper'
+go
+create procedure sp_matchcall (
+	@caller varchar(64),
+	@crossprogram int = NULL
+) as
+begin
+	select *
+	from [dbo].[call_record] as cr
+	where difference(cr.CallerName, @caller) > 2
+	and (@crossprogram is null or @crossprogram = cr.ProgramId)
+	order by difference(cr.CallerName, @caller) desc
 end
