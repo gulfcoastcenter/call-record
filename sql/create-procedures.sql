@@ -27,6 +27,8 @@ if OBJECT_ID('sp_makematch') is not null
 	drop procedure sp_makematch
 if OBJECT_ID('sp_removematch') is not null
 	drop procedure sp_removematch	
+if OBJECT_ID('sp_matchcmhc') is not null
+	drop procedure sp_matchcmhc
 go
 create procedure sp_counties as
 begin
@@ -312,9 +314,18 @@ create procedure sp_matchcmhc (
 ) as
 begin
 	select 	
-		clientid, 
-		FirstName + ' ' + LastName Name
+		cr.clientid, 
+		FirstName + ' ' + LastName Name,
+		convert(nvarchar(10), DOB, 101) as DOB,
+		ad.Address,
+		ad.CountyDesc,
+		ad.CityDesc,
+		ad.State,
+		ad.Zip,
+		ad.PhoneHome
 	from Client.client_record as cr
+	left join viewCurrentAddress ad
+	  on ad.ClientID = cr.clientid
 	where 
 		difference(cr.FirstName, @patient) > 3 and 
 		difference(cr.LastName, (select top 1 data from split(@patient,' ') where Id = '2')) > 3
