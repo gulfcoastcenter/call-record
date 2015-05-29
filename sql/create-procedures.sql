@@ -263,14 +263,61 @@ end
 go
 create procedure sp_matchcall (
 	@caller varchar(64),
+	@patient varchar(64)= null,
+	@phone varchar(10) = null,
+	@excludeid int = null,
 	@crossprogram int = NULL
 ) as
 begin
-	select *
+
+	select 	
+		CallId, 
+		convert(nvarchar(10), CallDate, 101),
+		CallerName ,
+		Status,
+		HistoryPreviousId,
+		HistoryNextId,
+		ProgramId,
+		PatientName ,
+		CmhcId ,
+		PhoneNumber ,
+		County ,
+		City, 
+		Street ,
+		State ,
+		Zip ,
+		ReferredTo ,
+		ReferredFrom ,
+		Request ,
+		CreateDate
 	from [dbo].[call_record] as cr
-	where difference(cr.CallerName, @caller) > 2
+	where (
+		(difference(cr.CallerName, @caller) > 3 and 
+			difference((select top 1 data from split(cr.CallerName, ' ') where Id = '2'), 
+			           (select top 1 data from split(@caller,' ') where Id = '2')) > 3)
+		or (DIFFERENCE(cr.PatientName, @patient) > 3 and 
+			difference((select top 1 data from split(cr.PatientName, ' ') where Id = '2'), 
+			           (select top 1 data from split(@patient,' ') where Id = '2')) > 3)
+		or cr.PhoneNumber = @phone
+	)
 	and (@crossprogram is null or @crossprogram = cr.ProgramId)
+	and Status = 0
+	and (@excludeid is null or @excludeid != CallId)
 	order by difference(cr.CallerName, @caller) desc
+end
+
+go
+create procedure sp_matchcmhc (
+	@patient varchar(64)= null
+) as
+begin
+	select 	
+		clientid, 
+		FirstName + ' ' + LastName Name
+	from Client.client_record as cr
+	where 
+		difference(cr.FirstName, @patient) > 3 and 
+		difference(cr.LastName, (select top 1 data from split(@patient,' ') where Id = '2')) > 3
 end
 
 go
@@ -309,3 +356,4 @@ begin
 	where call1 = @call1
 	  and call2 = @call2
 end
+
