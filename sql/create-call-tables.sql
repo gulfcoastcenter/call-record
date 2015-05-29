@@ -1,3 +1,5 @@
+if OBJECT_ID('call_matches') is not null
+	drop table call_matches
 if OBJECT_ID('call_record') is not null
 	drop table call_record
 if OBJECT_ID('record_status') is not null
@@ -8,6 +10,7 @@ if OBJECT_ID('state_code') is not null
 	drop table state_code
 if OBJECT_ID('program_code') is not null
 	drop table program_code
+
 go
 
 create table [dbo].[county_code] (
@@ -76,5 +79,11 @@ create table [dbo].[call_record] (
 	constraint [FK_HistroyNext_Id] foreign key (HistoryNextId) references call_record(CallId)
 )
 
-insert into call_record values (1, NULL, NULL, 3600, '5/8/2015', 'test caller', 'test patient', null, '1234567890', 'GALV', 'Galveston', '123 Main', 'TX', '77550', 'Some Referral To', 'Some Referral From', 'Some Reaseon', GETDATE())
+insert into call_record values (0, NULL, NULL, 3600, '5/8/2015', 'test caller', 'test patient', null, '1234567890', 'GALV', 'Galveston', '123 Main', 'TX', '77550', 'Some Referral To', 'Some Referral From', 'Some Reaseon', GETDATE())
 
+create table call_matches (
+	call1 int,
+	call2 int,
+	constraint [FK_call1_id] foreign key (call1) references call_record(callid),
+    constraint [FK_call2_id] foreign key (call2) references call_record(callid)
+)

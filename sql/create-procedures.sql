@@ -21,7 +21,12 @@ if OBJECT_ID('sp_matchcall') is not null
 	drop procedure sp_matchcall
 if OBJECT_ID('sp_updateNewHistoryCall') is not null
 	drop procedure sp_updateNewHistoryCall
-	
+if OBJECT_ID('sp_getmatches') is not null
+	drop procedure sp_getmatches
+if OBJECT_ID('sp_makematch') is not null
+	drop procedure sp_makematch
+if OBJECT_ID('sp_removematch') is not null
+	drop procedure sp_removematch	
 go
 create procedure sp_counties as
 begin
@@ -266,4 +271,41 @@ begin
 	where difference(cr.CallerName, @caller) > 2
 	and (@crossprogram is null or @crossprogram = cr.ProgramId)
 	order by difference(cr.CallerName, @caller) desc
+end
+
+go
+create procedure sp_getmatches (
+	@callid int
+) as 
+begin
+	select case 
+		when call1 = @callid then call2
+		when call2 = @callid then call1
+	end as matchid
+	from call_matches
+	where call1 = @callid or call2 = @callid
+end
+
+go
+create procedure sp_makematch (
+	@call1 int,
+	@call2 int
+) as
+begin
+	insert into call_matches
+	values (
+		@call1,
+		@call2
+	)
+end
+
+go
+create procedure sp_removematch (
+	@call1 int,
+	@call2 int
+) as 
+begin
+	delete from call_matches
+	where call1 = @call1
+	  and call2 = @call2
 end
