@@ -1,5 +1,10 @@
 <?php
 
+session_start();
+
+require_once('app/login.php');
+require_once('app/getuser.php');
+
 $root = array_pop(explode('/', getcwd()));
 $url = $_SERVER['REQUEST_URI'];
 $method = $_SERVER['REQUEST_METHOD'];
@@ -8,12 +13,38 @@ $path = explode('/', preg_replace($pattern, '', $url));
 
 set_include_path( dirname(__FILE__) );
 
-if (!$path[0]) {
-   echo 'index';
+if (!isset($_SESSION['user'])) {
+   $_SESSION['redirect'] = $path;
+   $path[0] = 'login';
+}
+if (!isset($path[0])) {
+   echo "index";
    return;
 }
+if ($path[0] == 'logout') {
+   session_unset();
+   $path[0] == 'login';
+}
+if ($path[0] == 'login') { 
+   if ($method == 'GET') { 
+      header('Content-Type: text/html');
+      readfile('pages/login.html');
+      return;
+   } else {
+      //try to login
+      $user = getuser(login($_POST['username'], $_POST['password']));
+      $_SESSION['user'] = $user;
+      if (!isset($_SESSION['user'])) {
+         echo 'login error';
+         return;
+      }
+      $path = $_SESSION['redirect'];
+   }
+}
 if ($path[0] == 'wellness') {
-   http_send_file('wellness.html');
+   header('Content-Type: text/html');
+   readfile('pages/wellness.html');
+   return;
 }
 if ($path[0] == 'api') {
    if ($method == 'POST') {

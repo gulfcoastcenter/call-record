@@ -20,6 +20,7 @@ function editcall($config, $callid, $postdata) {
    $args->cmhcid = $postdata['CmhcId'];
    $args->phonenumber = $postdata['phone'];
    $args->County = $postdata['county'];
+   $args->city = $postdata['city'];
    $args->street = $postdata['street'];
    $args->state = $postdata['state'];
    $args->zip = $postdata['zip'];

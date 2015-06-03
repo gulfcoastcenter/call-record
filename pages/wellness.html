@@ -1,0 +1,339 @@
+<!doctype html>
+<html>
+<head>
+   <title>Wellness Phone Calls</title>
+   <link rel='stylesheet' href='main.css'></link>
+   <link rel="stylesheet" href="//code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css">
+</head>
+<body>
+   <h1>Wellness Call Record</h1>
+   <div class='calls'>
+      <div class='icon-contianer' data-bind='click: new_call'>
+         <button class='add-icon'>
+            <span></span>
+         </button>
+         Add Call
+      </div>
+      <div data-bind='template: {name: "call-template", foreach: calls}'></div>
+   </div>
+   <div class='activecall'>
+     <div data-bind='template: {name: "active-template", if: activecall, data: activecall}'> </div>
+   </div>
+   <div class='match-container' data-bind='if:has_match'>
+      <div class='matches'>
+         <div>Possible Related Calls</div>
+         <div data-bind='template: {name: "matches-template", foreach: matches}'> </div>
+      </div>
+      <div class='matches'>
+         <div>Possible CMHC Matches</div>
+         <div data-bind='template: {name: "cmhc-template", foreach: cmhc}'></div>
+      </div>
+   </div>
+
+<script type='text/html' id='call-template'>
+   <div class='call-item' data-bind='click: $parent.activate_call'>
+      <span data-bind='text: date'></span>
+       - 
+      <span data-bind='text: caller'></span>
+   </div>
+</script>
+
+<script type='text/html' id='active-template'>
+   <div>
+      <div class='item'>
+         <div class='icon-container' data-bind='click: $parent.clear_active'>
+            [ - ] Clear Data
+         </div>
+      </div>
+      <div class='call'>
+         <div class='item'>
+            <label>id</label>
+            <span data-bind='text: id'></span>
+         </div>
+         <div class='item'>
+            <label>Call Date</label>
+            <input type='text' class='date' data-bind='textInput: date'>
+         </div>
+         <div class='item'>
+            <label>Caller</label>
+            <input type='text' data-bind='textInput: caller'>
+         </div>
+         <div class='item'>
+            <label>Patient Name</label>
+            <input type='text' data-bind='textInput: patient'>
+         </div>
+         <div class='item'>
+            <label>Phone</label>
+            <input type='text' data-bind='textInput: phone'>
+         </div>
+         <div class='item'>
+            <label>County</label>
+            <select data-bind="options: $parent.counties, optionsText: 'name', optionsValue: 'code', optionsCaption: 'Select County', value: county" ></select>
+         </div>
+         <div class='item'>
+            <label>City</label>
+            <input type='text' data-bind='textInput: city'>
+         </div>
+         <div class='item'>
+            <label>Street</label>
+            <input type='text' data-bind='textInput: street'>
+         </div>
+         <div class='item'>
+            <label>State</label>
+            <select data-bind="options: $parent.states, optionsText: 'name', optionsValue: 'code', optionsCaption: 'Select State', value: state" ></select>
+         </div>
+         <div class='item'>
+            <label>Zip</label>
+            <input type='text' data-bind='textInput: zip'>
+         </div>
+         <div class='item'>
+            <label>Referred To</label>
+            <input type='text' data-bind='textInput: referredto'>
+         </div>
+         <div class='item'>
+            <label>Referred From</label>
+            <input type='text' data-bind='textInput: referredfrom'>
+         </div>
+         <div class='item'>
+            <label>Request</label>
+            <textarea data-bind='textInput: request'></textarea>
+         </div>
+      <div>
+      <div class='icon-container' data-bind='ifnot: historynextid, click: $parent.edit_active'>
+         <button class='add-icon'>
+            <span></span><span></span>
+         </button>
+         Save Data
+      </div>
+      <div class='icon-container' data-bind='if: historypreviousid, click: $parent.get_prev'>
+         [ <- last ]
+      </div>
+      <div class='icon-container' data-bind='if: historynextid, click: $parent.get_next'>
+         [ next -> ]
+      </div>
+   </div>
+</script>
+<script type='text/html' id='matches-template'>
+   <div class='match-item-container'>
+      <div class='item'>
+         <div>(<span data-bind='text: date'></span>)</div>
+         <label>Caller:</label>
+         <span data-bind='text: caller'></span>
+         <div>
+            <label>Patient:</label>
+            <span data-bind='text: patient'></span>
+         </div>
+         <div>
+            <label>Phone:</label>
+            <span data-bind='text: phone'></span>
+         </div>
+         <div data-bind='click: $parent.copy_match, ifnot: $parent.activecall().historynextid'>
+            [<-- Copy Address Data]
+         </div>
+      </div>
+   </div>
+</script>
+<script type='text/html' id='cmhc-template'>
+   <div class='cmch-item-container'>
+      <div class='item'>
+         <div>
+         <label>ID:</label>
+         <span data-bind='text: id'></span>
+         </div><div>
+         <label>Name:</label>
+         <span data-bind='text: name'></span>
+         </div><div>
+         <label>DOB:</label>
+         <span data-bind='text: dob'></span>
+         </div>
+         <div data-bind='click: $parent.copy_cmhc, ifnot: $parent.activecall().historynextid'>
+            [<-- Copy Address Data]
+         </div>
+      </div>
+   </div>
+</script>
+<script src='https://cdnjs.cloudflare.com/ajax/libs/knockout/3.3.0/knockout-min.js'></script>
+<script src='https://code.jquery.com/jquery-1.11.3.min.js'></script>
+<script src='http://gccmhc/cmhcbui/cmhcbuilocal/c1FRSH/js/jquery-ui.min.js'></script>
+<script>
+   var model = {
+      counties: ko.observableArray(),
+      states: ko.observableArray(),
+      calls: ko.observableArray(),
+      updatelist: ko.observable(false),
+      matches: ko.observableArray(),
+      updatematches: ko.observable(false),
+      has_match: ko.observable(false),
+      cmhc: ko.observableArray(),
+      activecall: ko.observable(),
+      editedcall: ko.observable(),
+      new_call: function() {
+            model.activate_call({id: 'new'});
+         },
+      activate_call: function(call) { 
+         model.updatelist(!model.updatelist());
+         model.updatematches(!model.updatematches());
+         console.log('activate:', call.id);
+         $.get('~tim/call-record/api/call/' + call.id, function(details) {
+            var det = JSON.parse(details);
+            console.log(details);
+            model.activecall({
+               id: ko.observable(det.id),
+               program: ko.observable(det.program),
+               date: ko.observable(det.date),
+               caller: ko.observable(det.caller),
+               patient: ko.observable(det.patient),
+               cmhcid: ko.observable(det.cmhcid),
+               phone: ko.observable(det.phone),
+               county: ko.observable(det.county),
+               city: ko.observable(det.city),
+               street: ko.observable(det.street),
+               state: ko.observable(det.state),
+               zip: ko.observable(det.zip),
+               referredto: ko.observable(det.referredto),
+               referredfrom: ko.observable(det.referredfrom),
+               request: ko.observable(det.request),
+               historypreviousid: ko.observable(det.historypreviousid),
+               historynextid: ko.observable(det.historynextid),
+               status: ko.observable(det.status)
+            });
+            $('.date').datepicker();
+         });
+      },
+      copy_match:function(match) {
+               model.activecall().program(match.program);
+               model.activecall().caller(match.caller);
+               model.activecall().patient(match.patient);
+               model.activecall().cmhcid(match.cmhcid);
+               model.activecall().phone(match.phone);
+               model.activecall().county(match.county);
+               model.activecall().city(match.city);
+               model.activecall().street(match.street);
+               model.activecall().state(match.state);
+               model.activecall().zip(match.zip);
+      },
+      copy_cmhc:function(match) {
+               model.activecall().cmhcid(match.id);
+               model.activecall().patient(match.name);
+               model.activecall().phone(match.phone);
+               model.activecall().county(match.county);
+               model.activecall().city(match.city);
+               model.activecall().street(match.street);
+               model.activecall().state(match.state);
+               model.activecall().zip(match.zip);
+      },
+      get_prev: function() {
+         model.activate_call({id: model.activecall().historypreviousid()});
+      },
+      get_next: function() {
+         model.activate_call({id: model.activecall().historynextid()});
+      },
+      clear_active: function() {
+         model.activecall('');
+         model.matches('');
+      },
+      edit_active: function() {
+         var call = model.activecall();
+         model.editedcall({
+            id: call.id(),
+            program: call.program(),
+            date: call.date(),
+            caller: call.caller(),
+            patient: call.patient(),
+            cmhcid: call.cmhcid(),
+            phone: call.phone(),
+            county: call.county(),
+            city: call.city(),
+            street: call.street(),
+            state: call.state(),
+            zip: call.zip(),
+            referredto: call.referredto(),
+            referredfrom: call.referredfrom(),
+            request: call.request()
+         });
+      }
+
+   };
+   ko.computed(function() { 
+      var self = this;
+      var doupdate = self.updatelist();
+      //var calls = self.calls();
+      $.get('~tim/call-record/api/calls/3600', function(calllist) {
+         console.log(calllist);
+         var cl = JSON.parse(calllist);
+         self.calls(cl);
+         //self.calls(JSON.parse(calllist));
+      });
+   }, model);
+   ko.computed(function() {
+      var self = this;
+      var doupdate = self.updatematches();
+      var thiscall = self.activecall();
+      if (!thiscall) return;
+      $.post('api/possiblematches', {
+         caller: thiscall.caller(),
+         excludeid: thiscall.id(),
+         patient: thiscall.patient(),
+         phone: thiscall.phone()
+         }, function(matchlist) {
+
+         console.log(matchlist);
+         var ml = JSON.parse(matchlist);
+         self.matches(ml);
+      });
+   }, model);
+   ko.computed(function() {
+      var self = this;
+      var doupdate = self.updatematches();
+      var thiscall = self.activecall();
+      if (!thiscall) return;
+      $.post('api/possiblecmhcmatches', {
+         patient: thiscall.patient()
+         }, function(cmhclist) {
+         console.log(cmhclist);
+         var cl = JSON.parse(cmhclist);
+         self.cmhc(cl);
+      });
+   }, model);
+   ko.computed(function() {
+      var self = this;
+      var call = self.editedcall();
+      if (!call) return;
+      if (call.id) {
+         $.post('~tim/call-record/api/editcall', call, 
+            function(res) { 
+               //self.clear_active();
+               console.log('edit results', res);
+               self.activate_call(JSON.parse(res));
+               //self.activecall.id(res.id);
+               //self.activecall.historyid(res.historyid);
+               //self.calls('');
+            })
+      } else {
+         call.program = 3600;
+         console.log(call);
+         $.post('~tim/call-record/api/addcall/3600', call,
+            function(res) {
+               console.log(res);
+               self.activate_call(JSON.parse(res));
+            });
+      }
+
+   }, model);
+   ko.computed(function() {
+      this.has_match( this.matches().length > 0 || this.cmhc().length > 0);
+   }, model);
+
+   $.get('api/counties', function(counties) {
+      var c = JSON.parse(counties);
+      model.counties(c);
+   });
+   $.get('api/states', function(states) {
+      var s = JSON.parse(states);
+      model.states(s);
+   });
+
+   ko.applyBindings(model);
+</script>
+</body>
+</html>

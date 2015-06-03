@@ -6,18 +6,21 @@ class Call implements JsonSerializable {
       $this->date = $data[1];
       $this->caller = $data[2];
       $this->status = $data[3];
-      $this->historyid = $data[4];
-      $this->program = $data[5];
-      $this->patient = $data[6];
-      $this->cmhcid = $data[7];
-      $this->phone = $data[8];
-      $this->county = $data[9];
-      $this->street = $data[10];
-      $this->state = $data[11];
-      $this->zip = $data[12];
-      $this->referredto = $data[13];
-      $this->referredfrom = $data[14];
-      $this->request = $data[15];
+      $this->historypreviousid = $data[4];
+      $this->historynextid = $data[5];
+      $this->program = $data[6];
+      $this->patient = $data[7];
+      $this->cmhcid = $data[8];
+      $this->phone = $data[9];
+      $this->county = $data[10];
+      $this->city = $data[11];
+      $this->street = $data[12];
+      $this->state = $data[13];
+      $this->zip = $data[14];
+      $this->referredto = $data[15];
+      $this->referredfrom = $data[16];
+      $this->request = $data[17];
+      $this->createdate = $data[18];
    }
 
    public static function newCall($data) { 

@@ -11,7 +11,8 @@ function addcall($config, $program, $postdata) {
    $sql = 'sp_addcall';
    
    //$args->status = 0;
-   $args->historyid = null;
+   $args->historypreviousid = null;
+   $args->historyNextId = null;
    $args->programid = $program ? $program : null;
    $args->calldate = $postdata['date'];
    $args->callername = $postdata['caller'];
@@ -19,6 +20,7 @@ function addcall($config, $program, $postdata) {
    $args->cmhcid = $postdata['cmhcid'];
    $args->phonenumber = $postdata['phone'];
    $args->County = $postdata['county'];
+   $args->City = $postdata['city'];
    $args->street = $postdata['street'];
    $args->state = $postdata['state'];
    $args->zip = $postdata['zip'];

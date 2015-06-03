@@ -1,4 +1,7 @@
-DirectorySlash Off
-DirectoryIndex /~tim/call-record/index.php
+#DirectorySlash Off
+#DirectoryIndex /~tim/call-record/index.php
 FallbackResource /~tim/call-record/index.php
 
+RewriteEngine On
+RewriteBase /~tim/call-record/
+RewriteRule ^/.*$ index.php [L]
