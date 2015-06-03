@@ -47,6 +47,7 @@ if ($path[0] == 'wellness') {
    return;
 }
 if ($path[0] == 'api') {
+   $_POST['userid'] = $_SESSION['user']->id;
    if ($method == 'POST') {
       $path[3] = $_POST;
    }

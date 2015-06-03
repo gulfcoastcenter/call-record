@@ -27,6 +27,7 @@ function addcall($config, $program, $postdata) {
    $args->referredto = $postdata['referredto'];
    $args->referredfrom = $postdata['referredfrom'];
    $args->request = $postdata['request'];
+   $args->userid = $postdata['userid'];
    
    return json_encode(Call::newCall(execute($conn, $sql, $args)[0]));
 }
