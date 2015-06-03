@@ -72,6 +72,7 @@ create table [dbo].[call_record] (
 	ReferredFrom varchar(64),
 	Request nvarchar(max),
 	CreateDate datetime,
+	CreateUser varchar(10),
 	constraint [PK_call_record] primary key clustered ( [CallId] ASC ),
 	constraint [FK_county_code] foreign key (County) references county_code(CountyId),
 	constraint [FK_status_code] foreign key (Status) references record_status(StatusId),

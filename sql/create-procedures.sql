@@ -119,8 +119,8 @@ create procedure sp_addcall (
 	@Zip varchar(9) = null,
 	@ReferredTo varchar(64) = null,
 	@ReferredFrom varchar(64) = null,
-	@Request nvarchar(max)  = null--,
-	--@new_id int output
+	@Request nvarchar(max)  = null,
+	@UserId int
 ) as
 begin
 	insert into call_record (
@@ -141,7 +141,8 @@ begin
 		ReferredTo ,
 		ReferredFrom ,
 		Request ,
-		CreateDate
+		CreateDate,
+		CreateUser
 	) values (
 		0,
 		@HistoryPreviousId,
@@ -160,7 +161,8 @@ begin
 		@ReferredTo ,
 		@ReferredFrom ,
 		@Request ,
-		GETDATE()
+		GETDATE() ,
+		@UserId
 	);
 	--select @new_id = scope_identity()
 	select scope_identity() as [new_id]
@@ -210,7 +212,8 @@ create procedure sp_updatecall (
 	@Zip varchar(9) = null,
 	@ReferredTo varchar(64) = null,
 	@ReferredFrom varchar(64) = null,
-	@Request nvarchar(max) = null
+	@Request nvarchar(max) = null,
+	@UserId varchar(10)
 ) as
 begin
 	declare @this_id int
@@ -238,7 +241,8 @@ begin
 		@Zip,
 		@ReferredTo,
 		@ReferredFrom,
-		@Request
+		@Request,
+		@UserId
 	
 	--@new_id = scope_identity()
 	
