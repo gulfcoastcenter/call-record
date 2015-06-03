@@ -136,12 +136,16 @@
 <script type='text/html' id='cmhc-template'>
    <div class='cmch-item-container'>
       <div class='item'>
+         <div>
          <label>ID:</label>
          <span data-bind='text: id'></span>
+         </div><div>
          <label>Name:</label>
          <span data-bind='text: name'></span>
+         </div><div>
          <label>DOB:</label>
          <span data-bind='text: dob'></span>
+         </div>
          <div data-bind='click: $parent.copy_cmhc, ifnot: $parent.activecall().historynextid'>
             [<-- Copy Address Data]
          </div>
