@@ -42,9 +42,14 @@ if ($path[0] == 'login') {
    }
    return;
 }
-if ($path[0] == 'wellness') {
+if ($path[0] == 'js') {
+   header('Content-Type: text/javascript');
+   readfile('js/' + $path[1]);
+   return;
+}
+if (is_file('pages/'.$path[0].'.html')) {
    header('Content-Type: text/html');
-   readfile('pages/wellness.html');
+   readfile('pages/'.$path[0].'.html');
    return;
 }
 if ($path[0] == 'api') {
