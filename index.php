@@ -5,7 +5,7 @@ session_start();
 require_once('app/login.php');
 require_once('app/getuser.php');
 
-$root = array_pop(explode('/', getcwd()));
+$root = array_shift(explode('/', substr($_SERVER['REQUEST_URI'], 1)));
 $url = $_SERVER['REQUEST_URI'];
 $method = $_SERVER['REQUEST_METHOD'];
 $pattern = '/^.*'.$root.'\//';
@@ -40,7 +40,7 @@ if ($path[0] == 'login') {
       }
       $path = $_SESSION['redirect'];
    }
-   return;
+   //return;
 }
 if ($path[0] == 'js') {
    header('Content-Type: text/javascript');
