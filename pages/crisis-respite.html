@@ -1,0 +1,161 @@
+<!doctype html>
+<html>
+<head>
+   <title>Crisis Respite Referrals</title>
+   <link rel='stylesheet' href='main.css'></link>
+   <link rel="stylesheet" href="//code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css">
+</head>
+<body>
+   <h1>Crisis Respite Referrals</h1>
+   <div class='calls'>
+      <div class='icon-contianer' data-bind='click: new_call'>
+         <button class='add-icon'>
+            <span></span>
+         </button>
+         Add Referral
+      </div>
+      <div data-bind='template: {name: "call-template", foreach: calls}'></div>
+   </div>
+   <div class='activecall'>
+     <div data-bind='template: {name: "active-template", if: activecall, data: activecall}'> </div>
+   </div>
+   <div class='match-container' data-bind='if:has_match'>
+      <div class='matches'>
+         <div>Possible Related Referrals</div>
+         <div data-bind='template: {name: "matches-template", foreach: matches}'> </div>
+      </div>
+      <div class='matches'>
+         <div>Possible CMHC Matches</div>
+         <div data-bind='template: {name: "cmhc-template", foreach: cmhc}'></div>
+      </div>
+   </div>
+
+<script type='text/html' id='call-template'>
+   <div class='call-item' data-bind='click: $parent.activate_call'>
+      <span data-bind='text: date'></span>
+       - 
+      <span data-bind='text: caller'></span>
+   </div>
+</script>
+
+<script type='text/html' id='active-template'>
+   <div>
+      <div class='item'>
+         <div class='icon-container' data-bind='click: $parent.clear_active'>
+            [ - ] Clear Data
+         </div>
+      </div>
+      <div class='call'>
+         <div class='item'>
+            <label>id</label>
+            <span data-bind='text: id'></span>
+         </div>
+         <div class='item'>
+            <label>Referral Date</label>
+            <input type='text' class='date' data-bind='textInput: date'>
+         </div>
+         <div class='item'>
+            <label>Referrer</label>
+            <input type='text' data-bind='textInput: caller'>
+         </div>
+         <div class='item'>
+            <label>Patient Name</label>
+            <input type='text' data-bind='textInput: patient'>
+         </div>
+         <div class='item'>
+            <label>Phone</label>
+            <input type='text' data-bind='textInput: phone'>
+         </div>
+         <div class='item'>
+            <label>County</label>
+            <select data-bind="options: $parent.counties, optionsText: 'name', optionsValue: 'code', optionsCaption: 'Select County', value: county" ></select>
+         </div>
+         <div class='item'>
+            <label>City</label>
+            <input type='text' data-bind='textInput: city'>
+         </div>
+         <div class='item'>
+            <label>Street</label>
+            <input type='text' data-bind='textInput: street'>
+         </div>
+         <div class='item'>
+            <label>State</label>
+            <select data-bind="options: $parent.states, optionsText: 'name', optionsValue: 'code', optionsCaption: 'Select State', value: state" ></select>
+         </div>
+         <div class='item'>
+            <label>Zip</label>
+            <input type='text' data-bind='textInput: zip'>
+         </div>
+         <div class='item'>
+            <label>Referred To</label>
+            <input type='text' data-bind='textInput: referredto'>
+         </div>
+         <div class='item'>
+            <label>Referred From</label>
+            <input type='text' data-bind='textInput: referredfrom'>
+         </div>
+         <div class='item'>
+            <label>Request</label>
+            <textarea data-bind='textInput: request'></textarea>
+         </div>
+      <div>
+      <div class='icon-container' data-bind='ifnot: historynextid, click: $parent.edit_active'>
+         <button class='add-icon'>
+            <span></span><span></span>
+         </button>
+         Save Data
+      </div>
+      <div class='icon-container' data-bind='if: historypreviousid, click: $parent.get_prev'>
+         [ <- last ]
+      </div>
+      <div class='icon-container' data-bind='if: historynextid, click: $parent.get_next'>
+         [ next -> ]
+      </div>
+   </div>
+</script>
+<script type='text/html' id='matches-template'>
+   <div class='match-item-container'>
+      <div class='item'>
+         <div>(<span data-bind='text: date'></span>)</div>
+         <label>Referrer:</label>
+         <span data-bind='text: caller'></span>
+         <div>
+            <label>Patient:</label>
+            <span data-bind='text: patient'></span>
+         </div>
+         <div>
+            <label>Phone:</label>
+            <span data-bind='text: phone'></span>
+         </div>
+         <div data-bind='click: $parent.copy_match, ifnot: $parent.activecall().historynextid'>
+            [<-- Copy Address Data]
+         </div>
+      </div>
+   </div>
+</script>
+<script type='text/html' id='cmhc-template'>
+   <div class='cmch-item-container'>
+      <div class='item'>
+         <div>
+         <label>ID:</label>
+         <span data-bind='text: id'></span>
+         </div><div>
+         <label>Name:</label>
+         <span data-bind='text: name'></span>
+         </div><div>
+         <label>DOB:</label>
+         <span data-bind='text: dob'></span>
+         </div>
+         <div data-bind='click: $parent.copy_cmhc, ifnot: $parent.activecall().historynextid'>
+            [<-- Copy Address Data]
+         </div>
+      </div>
+   </div>
+</script>
+<script src='https://cdnjs.cloudflare.com/ajax/libs/knockout/3.3.0/knockout-min.js'></script>
+<script src='https://code.jquery.com/jquery-1.11.3.min.js'></script>
+<script src='http://gccmhc/cmhcbui/cmhcbuilocal/c1FRSH/js/jquery-ui.min.js'></script>
+<script src='js/call-record.js'></script>
+<script>gcc.callrecord('3901');</script>
+</body>
+</html>
