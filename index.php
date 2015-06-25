@@ -40,6 +40,7 @@ if ($path[0] == 'login') {
       }
       $path = $_SESSION['redirect'];
    }
+   return;
 }
 if ($path[0] == 'wellness') {
    header('Content-Type: text/html');
