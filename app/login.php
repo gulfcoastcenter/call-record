@@ -1,7 +1,7 @@
 <?php
 
 function login($user, $pass) { 
-   $url = "https://helpdesk.gcmhmr.com/loginShare/ldap.php";
+   $url = "http://helpdesk.gcmhmr.com/loginShare/ldap.php";
    $data = array('username' => $user, 'password' => $pass);
 
    $options = array(
