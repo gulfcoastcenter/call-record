@@ -174,7 +174,7 @@
          model.updatelist(!model.updatelist());
          model.updatematches(!model.updatematches());
          console.log('activate:', call.id);
-         $.get('~tim/call-record/api/call/' + call.id, function(details) {
+         $.get('api/call/' + call.id, function(details) {
             var det = JSON.parse(details);
             console.log(details);
             model.activecall({
@@ -258,7 +258,7 @@
       var self = this;
       var doupdate = self.updatelist();
       //var calls = self.calls();
-      $.get('~tim/call-record/api/calls/3600', function(calllist) {
+      $.get('api/calls/3600', function(calllist) {
          console.log(calllist);
          var cl = JSON.parse(calllist);
          self.calls(cl);
@@ -300,7 +300,7 @@
       var call = self.editedcall();
       if (!call) return;
       if (call.id) {
-         $.post('~tim/call-record/api/editcall', call, 
+         $.post('api/editcall', call, 
             function(res) { 
                //self.clear_active();
                console.log('edit results', res);
@@ -312,7 +312,7 @@
       } else {
          call.program = 3600;
          console.log(call);
-         $.post('~tim/call-record/api/addcall/3600', call,
+         $.post('api/addcall/3600', call,
             function(res) {
                console.log(res);
                self.activate_call(JSON.parse(res));
